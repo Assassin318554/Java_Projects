@@ -5,22 +5,32 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.ArrayList;
 
 
 class Calculator implements ActionListener, WindowListener {
-    public ArrayList<String> stringArrayList = new ArrayList<>();
-    public ArrayList<Integer> intArrayList = new ArrayList<>();
-    public static String string = "";
-    String str;
+    public String postNumberString = "";
+    public String preNumberString = "";
+    public String signString1 = "";
+    public String signString2 = "";
+    public double value1 = 0;
+    public double value2 = 0;
+    public double finalResult = 0;
+    public static int count = 0;
+    public static int flag = 0;
+
     Frame frame = new Frame();
-    Image icon = Toolkit.getDefaultToolkit().getImage("D:\\Java\\Java Workshop\\src\\DewanSir\\normalcalculator\\icon.png");
+    Image icon = Toolkit.getDefaultToolkit().getImage("D:\\Java\\Java Workshop\\src\\DewanSir\\normalcalculator\\calculatorIcon.png");
     Button []number = new Button[10];
     Button []sign = new Button[5];
     Button reset = new Button("AC");
     Button getResult = new Button("=");
-    Label answerField = new Label();
+    Label answerField = new Label("0");
     Panel paneltop = new Panel();
+    Panel paneltop1 = new Panel();
+    Panel paneltop2 = new Panel();
+    Panel paneltop3 = new Panel();
+    Panel paneltop4 = new Panel();
+    Panel paneltop5 = new Panel();
     Panel panelcenter = new Panel();
     Panel panelright = new Panel();
     Panel panelleft = new Panel();
@@ -48,12 +58,29 @@ class Calculator implements ActionListener, WindowListener {
 
         // Work of Top Panel
         paneltop.setBackground(Color.black);
-        paneltop.setLayout(new FlowLayout());
+        paneltop.setLayout(new BorderLayout());
         paneltop.setPreferredSize(new Dimension(0, 100));
         answerField.setPreferredSize(new Dimension(380, 90));
-        answerField.setFont(new Font("Cascadia Code",Font.BOLD,40));
-        answerField.setForeground(Color.WHITE);
-        answerField.setBackground(Color.BLACK);
+        answerField.setFont(new Font("Cascadia Code",Font.PLAIN,40));
+        answerField.setForeground(Color.black);
+        answerField.setBackground(Color.lightGray);
+        paneltop.add(paneltop1, BorderLayout.SOUTH);
+        paneltop.add(paneltop2, BorderLayout.WEST);
+        paneltop.add(paneltop3, BorderLayout.CENTER);
+        paneltop.add(paneltop4, BorderLayout.EAST);
+        paneltop.add(paneltop5, BorderLayout.NORTH);
+        paneltop1.setBackground(Color.black);
+        paneltop2.setBackground(Color.black);
+        paneltop3.setBackground(Color.black);
+        paneltop4.setBackground(Color.black);
+        paneltop3.setBackground(Color.black);
+        paneltop1.setPreferredSize(new Dimension(0, 12));
+        paneltop2.setPreferredSize(new Dimension(18, 0));
+        paneltop4.setPreferredSize(new Dimension(18, 0));
+        paneltop5.setPreferredSize(new Dimension(0, 12));
+
+        //answerField.setBackground(Color.lightGray);
+
 
 
         // Work of Center Panel
@@ -93,6 +120,7 @@ class Calculator implements ActionListener, WindowListener {
         // Work of Bottom Panel
         panelbottom.setBackground(Color.darkGray);
         reset.setBackground(Color.decode("#36faa1"));
+        reset.setFocusable(false);
         reset.setFont(new Font("Cascadia Code",Font.BOLD,40));
         getResult.setBackground(Color.decode("#a743fc"));
         getResult.setFont(new Font("Cascadia Code",Font.BOLD,40));
@@ -120,29 +148,65 @@ class Calculator implements ActionListener, WindowListener {
     public void actionPerformed(ActionEvent e) {
         Sum sum = new Sum();
         if(e.getSource() == reset){
-            str = " ";
-            string = "";
-            stringArrayList.clear();
-            answerField.setText(str);
+            postNumberString = "";
+            preNumberString = "";
+            signString1 = "";
+            signString2 = "";
+            value1 = 0.0;
+            value2 = 0.0;
+            finalResult = 0.0;
+            flag = 0;
+            count = 0;
+            answerField.setText("0");
         }
         else if(e.getSource() == getResult){
-            int ans = sum.DO(this);
-            str = Integer.toString(ans);
-            answerField.setText(str);
+            value1 = Double.parseDouble(preNumberString);
+            value2 = Double.parseDouble(postNumberString);
+            finalResult = sum.DO(this);
+            preNumberString = Double.toString(finalResult);
+            answerField.setText(preNumberString);
+            signString1 = "";
+            signString2 = "";
+            postNumberString = "";
+            count = 0;
+            flag = 1;
         }
         else{
             for (int i = 0; i < 10; i++) {
-                if (e.getSource() == number[i]) {
-                    stringArrayList.add(number[i].getLabel());
-                    string += number[i].getLabel();
-                    answerField.setText(string);
+                if (e.getSource() == number[i] && signString1 =="") {
+                    postNumberString += number[i].getLabel();
+                    answerField.setText(postNumberString);
+                }
+                if (e.getSource() == number[i] && signString1 !="") {
+                    postNumberString += number[i].getLabel();
+                    answerField.setText(preNumberString + signString1 + postNumberString);
+                    //System.out.println(preNumberString +" "+ signString1+" " + postNumberString);
                 }
             }
             for (int i = 0; i < 5; i++) {
-                if (e.getSource() == sign[i]) {
-                    stringArrayList.add(sign[i].getLabel());
-                    string += sign[i].getLabel();
-                    answerField.setText(string);
+                if (e.getSource() == sign[i] && count == 0 && flag == 0) {
+                    signString1 = sign[i].getLabel();
+                    answerField.setText(postNumberString + signString1);
+                    preNumberString = postNumberString;
+                    postNumberString = "";
+                    count++;
+                }
+                else if (e.getSource() == sign[i] && count == 0 && flag == 1) {
+                    signString1 = sign[i].getLabel();
+                    answerField.setText(preNumberString + signString1);
+                    count++;
+                    flag = 0;
+                }
+                else if (e.getSource() == sign[i] && count != 0) {
+                    signString2 = sign[i].getLabel();
+                    value1 = Double.parseDouble(preNumberString);
+                    value2 = Double.parseDouble(postNumberString);
+                    finalResult = sum.DO(this);
+                    preNumberString = Double.toString(finalResult);
+                    answerField.setText(preNumberString + signString2);
+                    signString1 = signString2;
+                    postNumberString = "";
+                    count++;
                 }
             }
         }

@@ -17,6 +17,7 @@ class Calculator implements ActionListener, WindowListener {
     public double finalResult = 0;
     public static int count = 0;
     public static int flag = 0;
+    public static int iHaveNoSignResult = 1;
 
     Frame frame = new Frame();
     Image icon = Toolkit.getDefaultToolkit().getImage("D:\\Java\\Java Workshop\\src\\DewanSir\\normalcalculator\\calculatorIcon.png");
@@ -159,7 +160,7 @@ class Calculator implements ActionListener, WindowListener {
             count = 0;
             answerField.setText("0");
         }
-        else if(e.getSource() == getResult){
+        else if(e.getSource() == getResult && count != 0){
             value1 = Double.parseDouble(preNumberString);
             value2 = Double.parseDouble(postNumberString);
             finalResult = sum.DO(this);
@@ -170,32 +171,65 @@ class Calculator implements ActionListener, WindowListener {
             postNumberString = "";
             count = 0;
             flag = 1;
+            iHaveNoSignResult = 1;
+        }
+        else if(e.getSource() == getResult && count == 0){
+            postNumberString = "";
+            preNumberString = "";
+            signString1 = "";
+            signString2 = "";
+            value1 = 0.0;
+            value2 = 0.0;
+            finalResult = 0.0;
+            flag = 0;
+            count = 0;
+            iHaveNoSignResult = 1;
+            answerField.setText("0");
         }
         else{
             for (int i = 0; i < 10; i++) {
-                if (e.getSource() == number[i] && signString1 =="") {
+                if (e.getSource() == number[i] && signString1 == "" && iHaveNoSignResult == 1) {
                     postNumberString += number[i].getLabel();
                     answerField.setText(postNumberString);
                 }
-                if (e.getSource() == number[i] && signString1 !="") {
+                else if (e.getSource() == number[i] && signString1 != "" && iHaveNoSignResult == 1) {
                     postNumberString += number[i].getLabel();
                     answerField.setText(preNumberString + signString1 + postNumberString);
-                    //System.out.println(preNumberString +" "+ signString1+" " + postNumberString);
                 }
+                else if (e.getSource() == number[i] && iHaveNoSignResult == 0 && flag == 1) {
+                    postNumberString = "";
+                    preNumberString = "";
+                    signString1 = "";
+                    signString2 = "";
+                    value1 = 0.0;
+                    value2 = 0.0;
+                    finalResult = 0.0;
+                    count = 0;
+                    iHaveNoSignResult = 1;
+                    flag = 0;
+                    postNumberString += number[i].getLabel();
+                    answerField.setText(postNumberString);
+                }
+
             }
             for (int i = 0; i < 5; i++) {
-                if (e.getSource() == sign[i] && count == 0 && flag == 0) {
+                if (e.getSource() == sign[i] && count == 0 && flag == 0 && postNumberString != "") {
                     signString1 = sign[i].getLabel();
                     answerField.setText(postNumberString + signString1);
                     preNumberString = postNumberString;
                     postNumberString = "";
                     count++;
                 }
-                else if (e.getSource() == sign[i] && count == 0 && flag == 1) {
+                else if (e.getSource() == sign[i] && count == 0 && flag == 1 && postNumberString != "") {
                     signString1 = sign[i].getLabel();
                     answerField.setText(preNumberString + signString1);
                     count++;
                     flag = 0;
+                }
+                else if (e.getSource() == sign[i] && postNumberString == "") {
+                    signString1 = sign[i].getLabel();
+                    answerField.setText(preNumberString + signString1);
+                    count++;
                 }
                 else if (e.getSource() == sign[i] && count != 0) {
                     signString2 = sign[i].getLabel();

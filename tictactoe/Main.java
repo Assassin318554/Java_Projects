@@ -97,6 +97,7 @@ class TicTacToe implements ActionListener, WindowListener {
                     move.setText("Player 2's move (O)");
                     if(doesItMatch.check(this) == true){
                         winner.setBounds(200,520,200,50);
+                        move.setText("");
                         winner.setText("Player 1 (X) wins!");
                         reset.setLabel("New Game");
                         win = 1;
@@ -110,6 +111,7 @@ class TicTacToe implements ActionListener, WindowListener {
                     buttons[i].setLabel("O");
                     move.setText("Player 1's move (X)");
                     if(doesItMatch.check(this) == true){
+                        move.setText("");
                         winner.setBounds(200,520,200,50);
                         winner.setText("Player 2 (O) wins!");
                         reset.setLabel("New Game");
